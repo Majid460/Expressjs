@@ -2,9 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes/routes');
 var bodyParser = require('body-parser');
-require('dotenv').config();
 
-const mongoString = process.env.DATABASE_URL
+const dev_db_url =""
+const DATABASE_URL=process.env.MONGODB_URI || dev_db_url;
+const mongoString = DATABASE_URL
 
 mongoose.connect(mongoString);
 const database = mongoose.connection
