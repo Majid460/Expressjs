@@ -8,4 +8,4 @@ https://www.mongodb.com/cloud/atlas/register
 Linked Apps:
 This api is linked with react native app that is fully functional and 
 i also deployed by api on server and running on production mode.
-Link of app: github.com/Majid460/ReduxExample-withSaga
+Link of app: (https://github.com/Majid460/ReduxExample-withSaga)
