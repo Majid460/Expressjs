@@ -50,17 +50,39 @@ router.get('/getByAge/:age', async (req, res) => {
         res.status(500).json({message: error.message})
     }
 })
-//Update by ID Method
-router.patch('/update/:id', (req, res) => {
-    res.send('Update by ID API')
+//Update by name Method
+router.patch('/update/:name',async (req, res) => {
+    try {
+        const name = {name:req.params.name};
+        const updatedData = req.body;
+        const options = { new: true };
+
+        const result = await Model.findOneAndUpdate(
+             name,updatedData, options
+        )
+
+        res.send(result)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
 })
 
 //Delete by ID Method
 router.delete('/delete/:name', async(req, res) => {
-    console.log("delete name: " +req.params.name)
     Model.deleteOne({name:req.params.name})
     try{
         const data = await Model.deleteOne({name:req.params.name});
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+})
+router.delete('/delete/:age', async(req, res) => {
+    Model.deleteOne({name:req.params.age})
+    try{
+        const data = await Model.deleteOne({name:req.params.age});
         res.json(data)
     }
     catch(error){
