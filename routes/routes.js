@@ -6,7 +6,6 @@ module.exports = router;
 
 //Post Method
 router.post('/post', async (req, res) => {
-    console.log(req.body)
     const data = new Model({
         name: req.body.name,
         age: req.body.age
@@ -35,7 +34,6 @@ router.get('/getAll',async (req, res) => {
 router.get('/getByName/:name', async (req, res) => {
     try{
         const data = await Model.find({name:req.params.name});
-        console.log(data)
         res.json(data)
     }
     catch(error){
@@ -58,6 +56,14 @@ router.patch('/update/:id', (req, res) => {
 })
 
 //Delete by ID Method
-router.delete('/delete/:id', (req, res) => {
-    res.send('Delete by ID API')
+router.delete('/delete/:name', async(req, res) => {
+    console.log("delete name: " +req.params.name)
+    Model.deleteOne({name:req.params.name})
+    try{
+        const data = await Model.deleteOne({name:req.params.name});
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
 })
