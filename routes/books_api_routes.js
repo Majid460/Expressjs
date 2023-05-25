@@ -217,18 +217,38 @@ router.post("/verifyToken", async (req, res) => {
 //updateProfile
 router.put("/updateProfile/:id", authenticateJWT, async (req, res) => {
   try {
-    const id = req.params.id;
+    let id = req.params.id;
+    let email = req.body.email;
+    let name = req.body.name;
+    var data = {};
     if (req.body != null) {
-      const data = req.body;
+      if (email != "" && name != "") {
+        data = { email: email, name: name };
+      } else if (email == "" && name != "") {
+        data = { name: name };
+      } else if (email != "" && name == "") {
+        data = { email: email };
+      }
       const options = { new: true };
       const response = await user_model.findOneAndUpdate(id, data, options);
-      if (response.ok) {
+      if (response) {
         res.status(200).json({ message: "Data Updated", data: response });
+      } else if (!response) {
+        res.status(400).json({ message: "Error in updating data", data: {} });
       } else {
         res.status(400).json({ message: "Error in updating data", data: {} });
       }
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+router.get("/logout", authenticateJWT, (req, res) => {
+  console.log(req.session);
+  if (!req.session) {
+    return res.status(401).json({ message: "Not logged in" });
+  } else {
+    req.session.destroy();
+    res.status(200).json({ message: "Logout successfully" });
   }
 });
