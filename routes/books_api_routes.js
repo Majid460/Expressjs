@@ -36,7 +36,6 @@ router.post("/login", async (req, res) => {
     const user = await UserModel.findOne({
       email: req.body.email,
     });
-
     if (user) {
       const result = req.body.password === user.password;
 
@@ -86,7 +85,7 @@ router.post("/login", async (req, res) => {
   }
 });
 //Post Method
-router.post("/AddBook", async (req, res) => {
+router.post("/AddBook", authenticateJWT, async (req, res) => {
   const data = new Model({
     id: "" + Math.random() + Math.random(),
     title: req.body.title,
@@ -103,7 +102,7 @@ router.post("/AddBook", async (req, res) => {
   }
 });
 // Add Author
-router.post("/AddAuthor", async (req, res) => {
+router.post("/AddAuthor", authenticateJWT, async (req, res) => {
   const data = new AuthorModel({
     name: req.body.name,
     pic: req.body.pic,
@@ -116,7 +115,7 @@ router.post("/AddAuthor", async (req, res) => {
   }
 });
 // Get Author
-router.get("/getAllAuthors", async (req, res) => {
+router.get("/getAllAuthors", authenticateJWT, async (req, res) => {
   try {
     const data = await AuthorModel.find();
     res.json(data);
@@ -125,7 +124,7 @@ router.get("/getAllAuthors", async (req, res) => {
   }
 });
 // Get Single Author
-router.get("/getAuthor", async (req, res) => {
+router.get("/getAuthor", authenticateJWT, async (req, res) => {
   try {
     const data = await AuthorModel.find({ name: req.params.name });
     res.json(data);
@@ -134,7 +133,7 @@ router.get("/getAuthor", async (req, res) => {
   }
 });
 //Get all Method
-router.get("/getAllBooks", async (req, res) => {
+router.get("/getAllBooks", authenticateJWT, async (req, res) => {
   try {
     const data = await Model.find();
     res.json(data);
@@ -144,7 +143,7 @@ router.get("/getAllBooks", async (req, res) => {
 });
 
 //Get by Name Method
-router.get("/getByTitle/:name", async (req, res) => {
+router.get("/getByTitle/:name", authenticateJWT, async (req, res) => {
   try {
     const data = await Model.find({ title: req.params.name });
     res.json(data);
@@ -162,7 +161,7 @@ router.get("/getByAuthor/:author", async (req, res) => {
   }
 });
 //Update by name Method
-router.patch("/update/:name", async (req, res) => {
+router.patch("/update/:name", authenticateJWT, async (req, res) => {
   try {
     const name = { title: req.params.name };
     const updatedData = req.body;
@@ -177,7 +176,7 @@ router.patch("/update/:name", async (req, res) => {
 });
 
 //Delete by name Method
-router.delete("/delete/:name", async (req, res) => {
+router.delete("/delete/:name", authenticateJWT, async (req, res) => {
   try {
     const data = await Model.deleteOne({ title: req.params.name });
     res.json(data);
@@ -243,12 +242,25 @@ router.put("/updateProfile/:id", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-router.get("/logout", authenticateJWT, (req, res) => {
-  console.log(req.session);
-  if (!req.session) {
-    return res.status(401).json({ message: "Not logged in" });
-  } else {
-    req.session.destroy();
-    res.status(200).json({ message: "Logout successfully" });
+router.post("/updatePassword", authenticateJWT, async (req, res) => {
+  try {
+    const user = await UserModel.findOne({
+      id: req.body.id,
+    });
+    if (user) {
+      if (req.body.currentPassword === user.password) {
+        user.password = req.body.newPassword;
+        user.save();
+        res.status(200).json({ message: "Password updated successfully" });
+      } else {
+        res
+          .status(400)
+          .json({ message: "Please enter correct current password" });
+      }
+    } else {
+      res.status(401).json({ message: "No User found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
