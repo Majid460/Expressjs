@@ -133,7 +133,7 @@ router.get("/getAuthor", authenticateJWT, async (req, res) => {
   }
 });
 //Get all Method
-router.get("/getAllBooks", authenticateJWT, async (req, res) => {
+router.get("/getAllBooks", async (req, res) => {
   try {
     const data = await Model.find();
     res.json(data);
